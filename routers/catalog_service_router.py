@@ -77,14 +77,10 @@ async def book_exists (
     ):
     """Endpoint to check an book."""
 
-
     x_internal_action_token = x_internal_action_token.replace("Bearer", "").strip()
-    print("hola")
     await validate_internal_action_token(x_internal_action_token)
-    
     book_query = await db.execute(select(Book).where(Book.id == UUID(book_id)))
     book = book_query.scalar_one_or_none()
-    
     
     if not book:
         return JSONResponse(
