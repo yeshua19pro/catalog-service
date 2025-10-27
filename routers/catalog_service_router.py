@@ -94,5 +94,5 @@ async def book_exists (
 
     return JSONResponse(
         status_code = 200,
-        content={"detail": "Book found"} 
+        content={"detail": "Book found", "book_price": book.price} 
     )
