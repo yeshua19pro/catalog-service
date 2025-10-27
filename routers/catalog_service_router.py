@@ -15,17 +15,15 @@ from utils.time import utc_now, utc_return_time_cast # Router functions for less
 
 router = APIRouter(prefix="/catalog", tags=["Catalogs"]) # All endpoints will start with /catalog and tagged as Catalogs
 
-@router.post("/review/{book_id}", status_code = status.HTTP_201_CREATED, include_in_schema=True) 
+@router.post("/register-book", status_code = status.HTTP_201_CREATED, include_in_schema=True) 
 @limiter.limit("10/minute")
-async def register_review_router (
-    book_id: str,
+async def register_book_router (
     registry_data: RegisterBook, # Pseudo model for book registration form
     request: Request,
     token_data: dict = Depends(validate_token),
     db: AsyncSession = Depends(get_session) # Async session for bd
     ):
     """Endpoint to register a new book."""
-
  
     book = await register_book(db, registry_data)
     
@@ -81,9 +79,9 @@ async def book_exists (
 
 
     x_internal_action_token = x_internal_action_token.replace("Bearer", "").strip()
-    
+    print("hola")
     await validate_internal_action_token(x_internal_action_token)
-        
+    
     book_query = await db.execute(select(Book).where(Book.id == UUID(book_id)))
     book = book_query.scalar_one_or_none()
     

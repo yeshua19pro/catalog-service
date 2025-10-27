@@ -11,8 +11,8 @@ from slowapi.middleware import SlowAPIMiddleware
 from core.limiter import limiter 
 
 app = FastAPI(
-    title="User Service",
-    description="Manages customer accounts, authentication, profiles, and access control.",
+    title="Catalog service",
+    description="Manages catalog for books filtering, metadata, etc",
     version="1.0.0"
 )
 
