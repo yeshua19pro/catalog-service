@@ -3,7 +3,6 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
-from core.security import configure_security
 from routers import catalog_service_router
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -29,7 +28,7 @@ app.add_middleware(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
-configure_security(app)
+
 
 # Routers, all routers and empoints that are configured for this Microservice
 app.include_router(catalog_service_router.router)
@@ -41,7 +40,7 @@ async def root(request: Request):
     return JSONResponse(
         status_code=200,
         content={
-            "message": "Auth Service online.",
+            "message": "Catalog Service online.",
             "status": "ok",
             "version": "1.0.0",
             "client_ip": request.client.host

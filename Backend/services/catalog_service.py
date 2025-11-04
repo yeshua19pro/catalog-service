@@ -77,27 +77,35 @@ async def filter_book(db: AsyncSession, filter_data: FilterBooks):
     publication_date_end_date = None
     condicionals = []
     
-    if filter_data.publication_date_start_date != "":
-        publication_date_start_date = parser.parse(filter_data.publication_date_start_date) 
-    
-    if filter_data.publication_date_end_date != "":
-        publication_date_end_date = parser.parse(filter_data.publication_date_end_date)
-        
-    if publication_date_start_date is not None:
-        if publication_date_start_date.tzinfo is not None:
-            publication_date_start_date = publication_date_start_date.replace(tzinfo=None)
-    
-    if publication_date_end_date is not None:    
-        if publication_date_end_date.tzinfo is not None:
-            publication_date_end_date = publication_date_end_date.replace(tzinfo=None)
+    if filter_data.publication_date_start_date:
+        try:
+            publication_date_start_date = parser.parse(filter_data.publication_date_start_date)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid format for publication_date_start_date. Use YYYY-MM-DD."
+            )
+
+    if filter_data.publication_date_end_date:
+        try:
+            publication_date_end_date = parser.parse(filter_data.publication_date_end_date)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid format for publication_date_end_date. Use YYYY-MM-DD."
+            )
+    if publication_date_start_date and publication_date_start_date.tzinfo:
+        publication_date_start_date = publication_date_start_date.replace(tzinfo=None)
+    if publication_date_end_date and publication_date_end_date.tzinfo:
+        publication_date_end_date = publication_date_end_date.replace(tzinfo=None)
     
     query = select(Book)
     if book_name:
-        condicionals.append(Book.book_name == book_name.strip().lower())
+        condicionals.append(Book.book_name.ilike(f"%{book_name.strip().lower()}%"))
     if author:
-        condicionals.append(Book.author == author.strip().lower())
+        condicionals.append(Book.author.ilike(f"%{author.strip().lower()}%"))
     if book_type:
-        condicionals.append(Book.book_type == book_type.strip().lower())
+        condicionals.append(Book.book_type.ilike(f"%{book_type.strip().lower()}%"))
     if price:
         condicionals.append(Book.price == price)
     if publication_date_start_date:
@@ -149,6 +157,7 @@ async def filter_book(db: AsyncSession, filter_data: FilterBooks):
     book_list = []
     for book in books: # extract book data to bytes, this is similar toString but for JsonResponse
         book_list.append({
+            "id": str(book.id),
             "book_name": book.book_name,
             "author": book.author,
             "book_type": book.book_type,

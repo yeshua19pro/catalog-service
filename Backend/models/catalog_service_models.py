@@ -2,11 +2,14 @@
 Models for catalog service operations such as registration and book retrieval.
 Is the way the data comes in and out of the service.
 """
+from uuid import UUID
+
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
 
 class RegisterBook(BaseModel):
+    id: UUID
     book_name: str
     author: str
     book_type: str

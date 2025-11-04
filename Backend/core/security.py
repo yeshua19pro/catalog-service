@@ -32,11 +32,3 @@ async def validate_internal_action_token(x_internal_action_token: str = Header(.
             detail="Invalid internal action token",
         )
 
-def configure_security(app: FastAPI):
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.CORS_ORIGINS,
-        allow_credentials=True,
-        allow_methods=[""],
-        allow_headers=[""],
-    )
